@@ -49,7 +49,7 @@ defmodule Schism.MixProject do
   def package do
     [
       name: "schism",
-      license: ["MIT"],
+      licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/keathley/schism"},
     ]
   end
