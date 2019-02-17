@@ -4,11 +4,17 @@ defmodule Schism.MixProject do
   def project do
     [
       app: :schism,
-      version: "0.1.0",
+      version: "1.0.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
+
+      description: description(),
+      package: package(),
+      name: "Schism",
+      source_url: "https://github.com/keathley/schism",
+      docs: docs(),
     ]
   end
 
@@ -19,16 +25,38 @@ defmodule Schism.MixProject do
     ]
   end
 
+  # Run "mix help deps" to learn about dependencies.
+  defp deps do
+    [
+      {:local_cluster, "~> 1.0", only: [:dev, :test]},
+      {:ex_doc, "~> 0.19", only: [:dev, :test]},
+    ]
+  end
+
   def aliases do
     [
       test: "test --no-start",
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
-  defp deps do
+  def description do
+    """
+    Schism provides a simple api for partitioning networked BEAM instances
+    without having to leave elixir code.
+    """
+  end
+
+  def package do
     [
-      {:local_cluster, "~> 1.0", only: [:dev, :test]},
+      name: "schism",
+      license: ["MIT"],
+      links: %{"GitHub" => "https://github.com/keathley/schism"},
+    ]
+  end
+
+  def docs do
+    [
+      main: "Schism",
     ]
   end
 end
