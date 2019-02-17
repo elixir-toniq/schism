@@ -2,6 +2,8 @@ defmodule SchismTest do
   use ExUnit.Case
   doctest Schism
 
+  @moduletag :capture_log
+
   test "paritions nodes" do
     nodes = LocalCluster.start_nodes("partition-nodes", 5)
     [n1, n2, n3, n4, n5] = nodes
@@ -21,19 +23,16 @@ defmodule SchismTest do
         assert :pang == :rpc.call(node, Node, :ping, [unreachable])
       end
     end
-    # Schism.partition([n1, n2])
-    # Schism.partition([n3])
-    # Schism.partition([n4, n5])
 
-    # for n <- :rpc.call(n1, Node, :list, []), n != manager, do: assert n in [n1, n2]
-    # for n <- :rpc.call(n2, Node, :list, []), n != manager, do: assert n in [n1, n2]
+    for partition <- partitions do
+      Schism.heal(partition)
+    end
 
-    # assert [manager] == :rpc.call(n3, Node, :list, [])
-
-    # for n <- :rpc.call(n4, Node, :list, []), n != manager, do: assert n in [n4, n5]
-    # for n <- :rpc.call(n5, Node, :list, []), n != manager, do: assert n in [n4, n5]
-
-    
+    for node <- nodes do
+      for other_node <- nodes, node != other_node do
+        assert :pong = :rpc.call(node, Node, :ping, [other_node])
+      end
+    end
   end
 end
 

@@ -28,7 +28,7 @@ defmodule Schism.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:local_cluster, "~> 1.0"},
+      {:local_cluster, "~> 1.0", only: [:dev, :test]},
     ]
   end
 end
