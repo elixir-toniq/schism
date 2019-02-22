@@ -65,6 +65,10 @@ defmodule Schism do
       # Reset the node and ensure we can still talk with it
       true = :rpc.call(n, :erlang, :set_cookie, [n, :erlang.get_cookie()])
       :pong = Node.ping(n)
+
+      for other_node <- nodes do
+        :rpc.call(n, Node, :connect, [other_node])
+      end
     end
   end
 
