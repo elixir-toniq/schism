@@ -1,5 +1,7 @@
 # Schism
 
+[![CircleCI](https://circleci.com/gh/keathley/schism.svg?style=svg)](https://circleci.com/gh/keathley/schism)[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://hexdocs.pm/schism/)
+
 Schism provides a simple api for testing partitions between BEAM nodes.
 
 Documentation: [https://hexdocs.pm/schism](https://hexdocs.pm/schism).

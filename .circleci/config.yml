@@ -16,7 +16,19 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - build-{{ checksum "mix.lock" }}
+            - build-
 
       # specify any bash command here prefixed with `run: `
+      - run: epmd -daemon
+      - run: mix local.hex --force && mix local.rebar --force
       - run: mix deps.get
       - run: mix test
+
+      - save_cache:
+          key: build-{{ checksum "mix.lock" }}
+          paths:
+            - deps
+            - _build
