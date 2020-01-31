@@ -39,19 +39,19 @@ defmodule Schism do
     manager = Node.self()
 
     for node <- nodes do
+      # Force the node to disconnect from all nodes that aren't us
+      all_except_us = :rpc.call(node, Node, :list, []) -- [manager]
+      Enum.each(all_except_us, fn n -> :rpc.call(node, Node, :disconnect, [n]) end)
+
       # Set the remote nodes cookie to a different value
       true = :rpc.call(node, :erlang, :set_cookie, [node, String.to_atom(id)])
-
-      # Force the node to disconnect from all other nodes that aren't us or in
-      # the partition
-      node
-      |> :rpc.call(Node, :list, [])
-      |> Enum.reject(fn n -> n == manager || n in nodes end)
-      |> Enum.each(fn n -> :rpc.call(node, Node, :disconnect, [n]) end)
 
       # Ensure we can still talk to the node
       :pong = Node.ping(node)
     end
+
+    # Reconnect the nodes in partition now that the cookie is the same
+    connect_nodes(nodes)
 
     nodes
   end
@@ -61,16 +61,16 @@ defmodule Schism do
   """
   @spec heal([Node.t]) :: [Node.t] | none()
   def heal(nodes) do
-    for n <- nodes do
-      # Reset the node and ensure we can still talk with it
-      true = :rpc.call(n, :erlang, :set_cookie, [n, :erlang.get_cookie()])
-      :pong = Node.ping(n)
-
-      for other_node <- nodes do
-        :rpc.call(n, Node, :connect, [other_node])
-      end
-    end
+    # Restore the cookie
+    partition(nodes, Atom.to_string(:erlang.get_cookie()))
   end
+
+  defp connect_nodes([node | other_nodes]) do
+    Enum.each(other_nodes, fn n -> :rpc.call(node, Node, :connect, [n]) end)
+    connect_nodes(other_nodes)
+  end
+
+  defp connect_nodes([]), do: :ok
 
   defp random_string do
     :crypto.strong_rand_bytes(10)
@@ -78,4 +78,3 @@ defmodule Schism do
     |> binary_part(0, 10)
   end
 end
-
