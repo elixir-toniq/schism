@@ -99,5 +99,7 @@ jobs:
           _build
           priv/plts
         key: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('mix.lock') }}
+    - name: epmd
+      run: epmd -daemon
     - name: Run Tests
       run: mix test
